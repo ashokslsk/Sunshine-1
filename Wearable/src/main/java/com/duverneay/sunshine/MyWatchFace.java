@@ -32,6 +32,7 @@ import android.os.Message;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
@@ -44,6 +45,7 @@ import java.util.concurrent.TimeUnit;
  * low-bit ambient mode, the text is drawn without anti-aliasing in ambient mode.
  */
 public class MyWatchFace extends CanvasWatchFaceService {
+    private static final String TAG = MyWatchFace.class.getSimpleName();
     private static final Typeface NORMAL_TYPEFACE =
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
@@ -93,6 +95,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                //TODO Time classes used in this example are different than the watch face sample.  Which impelemntation is better?
+                Log.d(TAG, "BroadcastReceiver onReceive run..");
                 mTime.clear(intent.getStringExtra("time-zone"));
                 mTime.setToNow();
             }
@@ -197,24 +201,32 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onPropertiesChanged(Bundle properties) {
+            // method is called giving very special display support
             super.onPropertiesChanged(properties);
+            Log.d(TAG, "onPropertiesChanged run..");
+            boolean burnInProtection = properties.getBoolean(PROPERTY_BURN_IN_PROTECTION, false);
+            //TODO set typeface based on burnInProtection
             mLowBitAmbient = properties.getBoolean(PROPERTY_LOW_BIT_AMBIENT, false);
         }
 
         @Override
         public void onTimeTick() {
+            // this method is called in ambient mode once/minute
             super.onTimeTick();
+            // tell framework canvas needs to be redrawn (onDraw() method)
             invalidate();
         }
 
         @Override
         public void onAmbientModeChanged(boolean inAmbientMode) {
+            // called whenever a switch has been made between modes
             super.onAmbientModeChanged(inAmbientMode);
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
                     mTextPaint.setAntiAlias(!inAmbientMode);
                 }
+                // force onDraw refresh after these changes
                 invalidate();
             }
 
@@ -249,6 +261,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
+            // onDraw is called alot, so should be efficient
+            // it is called in both ambient and interactive mode
+            Log.d(TAG, "onDraw called");
             // Draw the background.
             if (isInAmbientMode()) {
                 canvas.drawColor(Color.BLACK);
