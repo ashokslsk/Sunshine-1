@@ -326,6 +326,28 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d(LOG_TAG, "onLoadFinished running..");
+        // Compare the previous cursor data to newly loaded data
+        Cursor lastCursor = mForecastAdapter.getCursor();
+        if (data != null && lastCursor != null) {
+            data.moveToFirst();
+            double currentMax = data.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
+            double currentMin = data.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+            Log.d(LOG_TAG, "current max: " + currentMax);
+            Log.d(LOG_TAG, "current min: " + currentMin);
+            lastCursor.moveToFirst();
+            double lastMax = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
+            double lastMin = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+            Log.d(LOG_TAG, "last max: " + lastMax);
+            Log.d(LOG_TAG, "last min: " + lastMin);
+            if (lastMax == currentMax && lastMin==currentMin) {
+                Log.d(LOG_TAG, "no change in data");
+            }
+            else {
+                Log.d(LOG_TAG, "need to update wearable");
+            }
+        }
+
         mForecastAdapter.swapCursor(data);
         updateEmptyView();
         if ( data.getCount() == 0 ) {
