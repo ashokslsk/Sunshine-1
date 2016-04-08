@@ -47,6 +47,9 @@ import android.widget.TextView;
 
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.wearable.Wearable;
 
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link android.support.v7.widget.RecyclerView} layout.
@@ -326,25 +329,35 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        boolean updateWearable = false;
         Log.d(LOG_TAG, "onLoadFinished running..");
         // Compare the previous cursor data to newly loaded data
         Cursor lastCursor = mForecastAdapter.getCursor();
+        if (lastCursor == null && data != null) {
+            updateWearable = true;
+        }
         if (data != null && lastCursor != null) {
             data.moveToFirst();
             double currentMax = data.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
             double currentMin = data.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-            Log.d(LOG_TAG, "current max: " + currentMax);
-            Log.d(LOG_TAG, "current min: " + currentMin);
             lastCursor.moveToFirst();
             double lastMax = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
             double lastMin = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-            Log.d(LOG_TAG, "last max: " + lastMax);
-            Log.d(LOG_TAG, "last min: " + lastMin);
-            if (lastMax == currentMax && lastMin==currentMin) {
-                Log.d(LOG_TAG, "no change in data");
+            // compare previous and current adapter loaded Max and Min temps
+            if (lastMax != currentMax || lastMin != currentMin) {
+                Log.d(LOG_TAG, "Update wearable data");
+
+                GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                        .enableAutoManage(getActivity(), new GoogleApiClient.OnConnectionFailedListener() {
+                            @Override
+                            public void onConnectionFailed(ConnectionResult connectionResult) {
+                            }
+                        })
+                        .addApi(Wearable.API)
+                        .build();
             }
             else {
-                Log.d(LOG_TAG, "need to update wearable");
+                Log.d(LOG_TAG, "Do not update wearable data");
             }
         }
 
