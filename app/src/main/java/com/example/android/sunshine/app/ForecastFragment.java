@@ -49,6 +49,10 @@ import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 
 /**
@@ -64,6 +68,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private long mInitialSelectedDate = -1;
 
     private static final String SELECTED_KEY = "selected_position";
+
+    private static final String DATA_LAYER_PATH = "/data";
+    private static final String KEY_MIN_TEMP = "min_temp";
+    private static final String KEY_MAX_TEMP = "max_temp";
 
     private static final int FORECAST_LOADER = 0;
     // For the forecast view we're showing only a small subset of the stored data.
@@ -355,6 +363,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                         })
                         .addApi(Wearable.API)
                         .build();
+                PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
+                putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, 13);
+                putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, 26);
+                PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+                PendingResult<DataApi.DataItemResult> pendingResult =
+                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
             }
             else {
                 Log.d(LOG_TAG, "Do not update wearable data");
