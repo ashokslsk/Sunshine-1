@@ -39,6 +39,7 @@ import android.view.WindowInsets;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
 import com.google.android.gms.wearable.Wearable;
 
@@ -329,10 +330,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onConnected(Bundle bundle) {
-//            if (Log.isLoggable(TAG, Log.DEBUG)) {
-//                Log.d(TAG, "onConnected: " + bundle);
-//            }
-//            Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
+            // called when connection to Google Play services is established
+            if (Log.isLoggable(TAG, Log.DEBUG)) {
+                Log.d(TAG, "onConnected: " + bundle);
+            }
+            // notify Google Play services that we are interested in listening for data layer events
+
+            Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
 //            // TODO update data
 //
         }
@@ -344,7 +348,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDataChanged(DataEventBuffer dataEventBuffer) {
-
+            for (DataEvent event : dataEventBuffer) {
+                if (event.getType() == DataEvent.TYPE_DELETED) {
+                    Log.d(TAG, "DataItem deleted: " + event.getDataItem().getUri());
+                } else if (event.getType() == DataEvent.TYPE_CHANGED) {
+                    Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
+                }
+            }
         }
 
         @Override
