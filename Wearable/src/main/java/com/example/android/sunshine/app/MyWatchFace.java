@@ -149,6 +149,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
 
             mTime = new Time();
+            Log.d(TAG, "WatchFaceService onCreate running..");
         }
 
         @Override
@@ -170,6 +171,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
             super.onVisibilityChanged(visible);
 
             if (visible) {
+                Log.d(TAG, "watch face interactive mode");
+                mGoogleApiClient.connect();
                 registerReceiver();
 
                 // Update time zone in case it changed while we weren't visible.
