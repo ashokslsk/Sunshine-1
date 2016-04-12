@@ -346,7 +346,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             Double currentMin;
             Double lastMax;
             Double lastMin;
-            if (data != null) {
+            if (data != null && data.getCount()>0) {
                 data.moveToFirst();
                 currentMax = data.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
                 currentMin = data.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
@@ -355,7 +355,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 currentMax = null;
                 currentMin= null;
             }
-            if (lastCursor != null) {
+            if (lastCursor != null && lastCursor.getCount()>0) {
                 lastCursor.moveToFirst();
                 lastMax = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
                 lastMin = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
