@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.AppBarLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -66,6 +67,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private int mChoiceMode;
     private boolean mHoldForTransition;
     private long mInitialSelectedDate = -1;
+
+    private GoogleApiClient mGoogleApiClient;
 
     private static final String SELECTED_KEY = "selected_position";
 
@@ -368,12 +371,25 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             if (lastMax != currentMax || lastMin != currentMin) {
                 Log.d(LOG_TAG, "Update wearable data");
 
-                GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                        .enableAutoManage(getActivity(), new GoogleApiClient.OnConnectionFailedListener() {
+                mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
                             @Override
-                            public void onConnectionFailed(ConnectionResult connectionResult) {
+                            public void onConnected(Bundle connectionHint) {
+                                Log.d(LOG_TAG, "onConnected: " + connectionHint);
+                                // Now you can use the Data Layer API
+                            }
+                            @Override
+                            public void onConnectionSuspended(int cause) {
+                                Log.d(LOG_TAG, "onConnectionSuspended: " + cause);
                             }
                         })
+                        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                            @Override
+                            public void onConnectionFailed(ConnectionResult result) {
+                                Log.d(LOG_TAG, "onConnectionFailed: " + result);
+                            }
+                        })
+                                // Request access only to the Wearable API
                         .addApi(Wearable.API)
                         .build();
                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
@@ -440,8 +456,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onDestroy() {
         super.onDestroy();
+        mGoogleApiClient.disconnect();
         if (null != mRecyclerView) {
             mRecyclerView.clearOnScrollListeners();
+
         }
     }
 

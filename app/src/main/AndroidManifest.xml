@@ -114,7 +114,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
 
-                <category android:name="com.example.android.sunshine.app" />
+                <category android:name="com.example.android.sunshine.app.gcm" />
             </intent-filter>
         </receiver>
         <!-- Muzei Extension -->
