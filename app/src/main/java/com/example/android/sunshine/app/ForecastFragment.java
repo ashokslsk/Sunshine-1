@@ -341,16 +341,29 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         Log.d(LOG_TAG, "onLoadFinished running..");
         // Compare the previous cursor data to newly loaded data
         Cursor lastCursor = mForecastAdapter.getCursor();
-        if (lastCursor == null && data != null) {
-            updateWearable = true;
-        }
-        if (data != null && lastCursor != null) {
-            data.moveToFirst();
-            double currentMax = data.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-            double currentMin = data.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-            lastCursor.moveToFirst();
-            double lastMax = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-            double lastMin = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+
+            Double currentMax;
+            Double currentMin;
+            Double lastMax;
+            Double lastMin;
+            if (data != null) {
+                data.moveToFirst();
+                currentMax = data.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
+                currentMin = data.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+            }
+            else {
+                currentMax = null;
+                currentMin= null;
+            }
+            if (lastCursor != null) {
+                lastCursor.moveToFirst();
+                lastMax = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
+                lastMin = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+            }
+            else {
+                lastMax = null;
+                lastMin = null;
+            }
             // compare previous and current adapter loaded Max and Min temps
             if (lastMax != currentMax || lastMin != currentMin) {
                 Log.d(LOG_TAG, "Update wearable data");
@@ -369,11 +382,12 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                 PendingResult<DataApi.DataItemResult> pendingResult =
                         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+
             }
             else {
                 Log.d(LOG_TAG, "Do not update wearable data");
             }
-        }
+
 
         mForecastAdapter.swapCursor(data);
         updateEmptyView();
