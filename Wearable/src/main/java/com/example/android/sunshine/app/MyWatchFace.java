@@ -122,6 +122,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 .addApi(Wearable.API)
                 .build();
 
+
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
          * disable anti-aliasing in ambient mode.
@@ -334,6 +335,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         @Override
         public void onConnected(Bundle bundle) {
             // called when connection to Google Play services is established
+            Log.d(TAG, "onConnected running...");
             if (Log.isLoggable(TAG, Log.DEBUG)) {
                 Log.d(TAG, "onConnected: " + bundle);
             }
@@ -346,7 +348,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onConnectionSuspended(int i) {
-
+            Log.d(TAG, "onConnectionSuspended running...");
         }
 
         @Override
@@ -362,6 +364,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onConnectionFailed(ConnectionResult connectionResult) {
+            Log.d(TAG, "onConnectionFailed running...");
 
         }
     }

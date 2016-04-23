@@ -392,12 +392,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                                 // Request access only to the Wearable API
                         .addApi(Wearable.API)
                         .build();
+                mGoogleApiClient.connect();
                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
                 putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, 13);
                 putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, 26);
                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                 PendingResult<DataApi.DataItemResult> pendingResult =
                         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+                Log.d(LOG_TAG, "Putting data map request ");
 
             }
             else {
