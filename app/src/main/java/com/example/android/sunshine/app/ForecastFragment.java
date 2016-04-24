@@ -380,7 +380,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
                                 putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, currentMin);
                                 putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, currentMax);
-                                putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
+                                //putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
                                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                                 PendingResult<DataApi.DataItemResult> pendingResult =
                                         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);

@@ -393,10 +393,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
                         double maxTemp = config.getDouble(KEY_MAX_TEMP);
                         Log.d(TAG, "max temp updated to: " + maxTemp);
                     }
-                    if (configKey.equals("time")) {
-                        Long timeStamp = config.getLong("time");
-                        Log.d(TAG, "timeStamp updated to: " + timeStamp);
-                    }
+//                    if (configKey.equals("time")) {
+//                        Long timeStamp = config.getLong("time");
+//                        Log.d(TAG, "timeStamp updated to: " + timeStamp);
+//                    }
                 }
 
             }
