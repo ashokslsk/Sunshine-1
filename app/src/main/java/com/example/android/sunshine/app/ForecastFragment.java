@@ -73,8 +73,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String SELECTED_KEY = "selected_position";
 
     private static final String DATA_LAYER_PATH = "/data";
-    private static final String KEY_MIN_TEMP = "min_temp";
-    private static final String KEY_MAX_TEMP = "max_temp";
+    public static final String KEY_MIN_TEMP = "min_temp";
+    public static final String KEY_MAX_TEMP = "max_temp";
 
     private static final int FORECAST_LOADER = 0;
     // For the forecast view we're showing only a small subset of the stored data.
@@ -345,8 +345,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         // Compare the previous cursor data to newly loaded data
         Cursor lastCursor = mForecastAdapter.getCursor();
 
-            Double currentMax;
-            Double currentMin;
+            final Double currentMax;
+            final Double currentMin;
             Double lastMax;
             Double lastMin;
             if (data != null && data.getCount()>0) {
@@ -378,8 +378,8 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                                 Log.d(LOG_TAG, "onConnected: " + connectionHint);
                                 // Now you can use the Data Layer API
                                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
-                                putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, 13);
-                                putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, 26);
+                                putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, currentMin);
+                                putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, currentMax);
                                 putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
                                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                                 PendingResult<DataApi.DataItemResult> pendingResult =

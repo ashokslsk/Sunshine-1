@@ -41,6 +41,9 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
+import com.google.android.gms.wearable.DataItem;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 
 import java.lang.ref.WeakReference;
@@ -66,6 +69,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
      * Handler message id for updating the time periodically in interactive mode.
      */
     private static final int MSG_UPDATE_TIME = 0;
+
+    public static final String KEY_MIN_TEMP = "min_temp";
+    public static final String KEY_MAX_TEMP = "max_temp";
 
     @Override
     public Engine onCreateEngine() {
@@ -374,6 +380,25 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 } else if (event.getType() == DataEvent.TYPE_CHANGED) {
                     Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
                 }
+                DataItem dataItem = event.getDataItem();
+                DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
+                DataMap config = dataMapItem.getDataMap();
+                for (String configKey : config.keySet()) {
+                    Log.d(TAG, "Key: " + configKey + "updated");
+                    if (configKey.equals(KEY_MIN_TEMP)) {
+                        double minTemp = config.getDouble(KEY_MIN_TEMP);
+                        Log.d(TAG, "min temp updated to: " + minTemp);
+                    }
+                    if (configKey.equals(KEY_MAX_TEMP)) {
+                        double maxTemp = config.getDouble(KEY_MAX_TEMP);
+                        Log.d(TAG, "max temp updated to: " + maxTemp);
+                    }
+                    if (configKey.equals("time")) {
+                        Long timeStamp = config.getLong("time");
+                        Log.d(TAG, "timeStamp updated to: " + timeStamp);
+                    }
+                }
+
             }
         }
 
