@@ -377,6 +377,14 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                             public void onConnected(Bundle connectionHint) {
                                 Log.d(LOG_TAG, "onConnected: " + connectionHint);
                                 // Now you can use the Data Layer API
+                                PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
+                                putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, 13);
+                                putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, 26);
+                                putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
+                                PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+                                PendingResult<DataApi.DataItemResult> pendingResult =
+                                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+                                Log.d(LOG_TAG, "Putting data map request ");
                             }
                             @Override
                             public void onConnectionSuspended(int cause) {
@@ -393,13 +401,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                         .addApi(Wearable.API)
                         .build();
                 mGoogleApiClient.connect();
-                PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
-                putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, 13);
-                putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, 26);
-                PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-                PendingResult<DataApi.DataItemResult> pendingResult =
-                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-                Log.d(LOG_TAG, "Putting data map request ");
+
 
             }
             else {
@@ -458,7 +460,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mGoogleApiClient.disconnect();
+        if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
         if (null != mRecyclerView) {
             mRecyclerView.clearOnScrollListeners();
 

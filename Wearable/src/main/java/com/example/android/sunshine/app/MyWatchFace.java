@@ -170,17 +170,23 @@ public class MyWatchFace extends CanvasWatchFaceService {
         @Override
         public void onVisibilityChanged(boolean visible) {
             super.onVisibilityChanged(visible);
-
+            Log.d(TAG, "onVisibilityChanged");
             if (visible) {
-                Log.d(TAG, "watch face interactive mode");
-                mGoogleApiClient.connect();
                 registerReceiver();
+                mGoogleApiClient.connect();
+                Log.d(TAG, "connecting GoogleApiClient");
 
                 // Update time zone in case it changed while we weren't visible.
                 mTime.clear(TimeZone.getDefault().getID());
                 mTime.setToNow();
-            } else {
+            }
+            else {
                 unregisterReceiver();
+                if (mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+                    Wearable.DataApi.removeListener(mGoogleApiClient, this);
+                    mGoogleApiClient.disconnect();
+                    Log.d(TAG, "disconnecting GoogleApiClient");
+                }
             }
 
             // Whether the timer should be running depends on whether we're visible (as well as
@@ -241,13 +247,22 @@ public class MyWatchFace extends CanvasWatchFaceService {
         @Override
         public void onAmbientModeChanged(boolean inAmbientMode) {
             // called whenever a switch has been made between modes
+            Log.d(TAG, "onAmbientModeChanged");
             super.onAmbientModeChanged(inAmbientMode);
+
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
                     mTextPaint.setAntiAlias(!inAmbientMode);
                 }
                 // force onDraw refresh after these changes
+                if (!mAmbient) {
+
+                }
+                else {
+
+
+                }
                 invalidate();
             }
 
