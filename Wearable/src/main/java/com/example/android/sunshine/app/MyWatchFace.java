@@ -122,6 +122,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
         float mXOffset;
         float mYOffset;
 
+        Long mMinTemp;
+        Long mMaxTemp;
+
+
         GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(MyWatchFace.this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
@@ -319,6 +323,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     ? String.format("%d:%02d", mTime.hour, mTime.minute)
                     : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+            if (mMinTemp != null) {
+                canvas.drawText(Long.toString(mMinTemp), mXOffset, mYOffset+80, mTextPaint);
+            }
+            if (mMaxTemp != null) {
+                canvas.drawText(Long.toString(mMaxTemp), mXOffset+120, mYOffset+80, mTextPaint);
+            }
         }
 
         /**
@@ -386,12 +396,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 for (String configKey : config.keySet()) {
                     Log.d(TAG, "Key: " + configKey + "updated");
                     if (configKey.equals(KEY_MIN_TEMP)) {
-                        double minTemp = config.getDouble(KEY_MIN_TEMP);
-                        Log.d(TAG, "min temp updated to: " + minTemp);
+
+                        mMinTemp = Math.round(config.getDouble(KEY_MIN_TEMP));
+                        Log.d(TAG, "min temp updated to: " + mMinTemp);
                     }
                     if (configKey.equals(KEY_MAX_TEMP)) {
-                        double maxTemp = config.getDouble(KEY_MAX_TEMP);
-                        Log.d(TAG, "max temp updated to: " + maxTemp);
+                        mMaxTemp = Math.round(config.getDouble(KEY_MAX_TEMP));
+                        Log.d(TAG, "max temp updated to: " + mMaxTemp);
                     }
 //                    if (configKey.equals("time")) {
 //                        Long timeStamp = config.getLong("time");
