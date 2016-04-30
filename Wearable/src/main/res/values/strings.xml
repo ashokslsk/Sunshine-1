@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Sunshine</string>
     <string name="my_digital_name">Sunshine</string>
+
+    // days of the week, abbreviated to 3 letters
+    <string name="day0">SUN</string>
+    <string name="day1">MON</string>
+    <string name="day2">TUE</string>
+    <string name="day3">WED</string>
+    <string name="day4">THU</string>
+    <string name="day5">FRI</string>
+    <string name="day6">SAT</string>
 </resources>

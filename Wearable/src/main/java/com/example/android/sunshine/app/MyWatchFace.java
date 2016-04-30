@@ -132,6 +132,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private Integer mMaxTemp;
         private Integer mWeatherId;
 
+        private float mTimeWidth;
+
         private static final String DEGREE_SYMBOL = "\u00b0";
 
 
@@ -247,6 +249,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
 
             mTextWhitePaint.setTextSize(textSize);
+            // Measure expected max time for determining
+            mTimeWidth = mTextWhitePaint.measureText("88:88");
         }
 
         @Override
@@ -337,15 +341,25 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }
             double centerX = width / 2f;
             double centerY = height / 2f;
+
             // Draw Line Separator
             int lineLength = width/4;
             canvas.drawLine((float) centerX-lineLength/2, (float) centerY, (float) centerX+lineLength/2, (float) centerY, mTextLightPaint);
             float topTextBaselineOffset = height/2/5;
 
-            // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
+            // Draw H:MM in ambient and interactive modes
             mTime.setToNow();
-            String text = String.format("%d:%02d", mTime.hour, mTime.minute);
-            canvas.drawText(text, mXOffset, (float) centerY-topTextBaselineOffset, mTextWhitePaint);
+            String time = String.format("%d:%02d", mTime.hour, mTime.minute);
+            Integer weekDay = Utility.getDay(mTime.weekDay);
+            String weekDayAbbrev;
+            if (weekDay != null) {
+                weekDayAbbrev = getResources().getString(weekDay);
+            }
+            else {
+                weekDayAbbrev = "";
+            }
+            canvas.drawText(time, (float)  centerX-mTimeWidth/2, (float) centerY-topTextBaselineOffset, mTextWhitePaint);
+            canvas.drawText(weekDayAbbrev, (float)centerX-mTimeWidth/2, (float) centerY+topTextBaselineOffset, mTextWhitePaint);
             if (mMinTemp != null) {
                 // canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }

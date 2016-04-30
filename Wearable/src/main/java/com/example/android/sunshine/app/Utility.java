@@ -126,4 +126,33 @@ public class Utility {
         }
         return -1;
     }
+    public static Integer getDay(int day) {
+        Integer dayString;
+        switch (day) {
+            case 0:
+                dayString = R.string.day0;
+                break;
+            case 1:
+                dayString = R.string.day1;
+                break;
+            case 2:
+                dayString = R.string.day2;
+                break;
+            case 3:
+                dayString = R.string.day3;
+                break;
+            case 4:
+                dayString = R.string.day4;
+                break;
+            case 5:
+                dayString = R.string.day5;
+                break;
+            case 6:
+                dayString = R.string.day6;
+                break;
+            default:
+                dayString = null;
+        }
+        return dayString;
+    }
 }
