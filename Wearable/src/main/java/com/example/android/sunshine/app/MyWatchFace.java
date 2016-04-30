@@ -30,6 +30,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
@@ -339,9 +340,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }
 
             // TEMP - try drawing on canvas
-            Drawable d = getResources().getDrawable(R.drawable.art_clear);
-            d.setBounds(50, 50, 80, 80);
-            d.draw(canvas);
+            if (mWeatherId != null){
+                int weatherImage = Utility.getArtResourceForWeatherCondition(mWeatherId);
+
+                Drawable weatherArt = ResourcesCompat.getDrawable(getResources(), weatherImage, null);
+                weatherArt.setBounds(100, 100, 140, 140);
+                weatherArt.draw(canvas);
+            }
         }
 
         /**
