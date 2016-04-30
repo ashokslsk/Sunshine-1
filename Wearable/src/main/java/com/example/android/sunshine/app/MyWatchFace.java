@@ -350,6 +350,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // Draw H:MM in ambient and interactive modes
             mTime.setToNow();
             String time = String.format("%d:%02d", mTime.hour, mTime.minute);
+            // Day of the week
             Integer weekDay = Utility.getDay(mTime.weekDay);
             String weekDayAbbrev;
             if (weekDay != null) {
@@ -358,8 +359,19 @@ public class MyWatchFace extends CanvasWatchFaceService {
             else {
                 weekDayAbbrev = "";
             }
+            // Month of the year
+            Integer yearMonth = Utility.getMonth(mTime.month);
+            String yearMonthAbbrev;
+            if (yearMonth != null) {
+                yearMonthAbbrev = getResources().getString(yearMonth);
+            }
+            else {
+                yearMonthAbbrev = "";
+            }
+            String formattedDate = weekDayAbbrev + ", " + yearMonthAbbrev + " " + mTime.monthDay;
+            Log.d(TAG, "Date: " + formattedDate);
             canvas.drawText(time, (float)  centerX-mTimeWidth/2, (float) centerY-topTextBaselineOffset, mTextWhitePaint);
-            canvas.drawText(weekDayAbbrev, (float)centerX-mTimeWidth/2, (float) centerY+topTextBaselineOffset, mTextWhitePaint);
+            canvas.drawText(formattedDate, (float)centerX-mTimeWidth/2, (float) centerY+topTextBaselineOffset, mTextLightPaint);
             if (mMinTemp != null) {
                 // canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }

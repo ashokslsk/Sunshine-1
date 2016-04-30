@@ -155,4 +155,48 @@ public class Utility {
         }
         return dayString;
     }
+    public static Integer getMonth(int month) {
+        Integer monthString;
+        switch (month) {
+            case 0:
+                monthString = R.string.month0;
+                break;
+            case 1:
+                monthString = R.string.month1;
+                break;
+            case 2:
+                monthString = R.string.month2;
+                break;
+            case 3:
+                monthString = R.string.month3;
+                break;
+            case 4:
+                monthString = R.string.month4;
+                break;
+            case 5:
+                monthString = R.string.month5;
+                break;
+            case 6:
+                monthString = R.string.month6;
+                break;
+            case 7:
+                monthString = R.string.month7;
+                break;
+            case 8:
+                monthString = R.string.month8;
+                break;
+            case 9:
+                monthString = R.string.month9;
+                break;
+            case 10:
+                monthString = R.string.month10;
+                break;
+            case 11:
+                monthString = R.string.month11;
+                break;
+            default:
+                monthString=null;
+        }
+        return monthString;
+    }
 }
