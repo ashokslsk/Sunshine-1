@@ -26,6 +26,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -72,6 +73,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
     public static final String KEY_MIN_TEMP = "min_temp";
     public static final String KEY_MAX_TEMP = "max_temp";
+    public static final String KEY_WEATHER_CONDITION_ID = "weather_id";
 
 
 
@@ -126,6 +128,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         private Integer mMinTemp;
         private Integer mMaxTemp;
+        private Integer mWeatherId;
 
         private static final String DEGREE_SYMBOL = "\u00b0";
 
@@ -335,6 +338,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, mXOffset+120, mYOffset+80, mTextPaint);
             }
 
+            // TEMP - try drawing on canvas
+            Drawable d = getResources().getDrawable(R.drawable.art_clear);
+            d.setBounds(50, 50, 80, 80);
+            d.draw(canvas);
         }
 
         /**
@@ -409,6 +416,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     if (configKey.equals(KEY_MAX_TEMP)) {
                         mMaxTemp = config.getInt(KEY_MAX_TEMP);
                         Log.d(TAG, "max temp updated to: " + mMaxTemp);
+                    }
+                    if (configKey.equals(KEY_WEATHER_CONDITION_ID)) {
+                        mWeatherId = config.getInt(KEY_WEATHER_CONDITION_ID);
+                        Log.d(TAG, "weather condition id updated to : " + mWeatherId);
                     }
 //                    if (configKey.equals("time")) {
 //                        Long timeStamp = config.getLong("time");
