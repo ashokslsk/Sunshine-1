@@ -385,8 +385,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }
             String formattedDate = weekDayAbbrev + ", " + yearMonthAbbrev + " " + mTime.monthDay;
             Log.d(TAG, "Date: " + formattedDate);
+            // Draw date and time on top half of watch
             canvas.drawText(time, (float) centerX -mTimeWidth/2, (float) centerY - dateMargin*2 - mDateHeight, mTextWhitePaint);
             canvas.drawText(formattedDate, (float)centerX-mDateWidth/2, (float) centerY-dateMargin, mTextLightPaint);
+
+            // draw
+
             if (mMinTemp != null) {
                 // canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }
