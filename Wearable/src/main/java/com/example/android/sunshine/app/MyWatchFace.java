@@ -340,14 +340,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // Draw Line Separator
             int lineLength = width/4;
             canvas.drawLine((float) centerX-lineLength/2, (float) centerY, (float) centerX+lineLength/2, (float) centerY, mTextLightPaint);
-
+            float topTextBaselineOffset = height/2/5;
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             mTime.setToNow();
-            String text = mAmbient
-                    ? String.format("%d:%02d", mTime.hour, mTime.minute)
-                    : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-            canvas.drawText(text, mXOffset, mYOffset-40, mTextWhitePaint);
+            String text = String.format("%d:%02d", mTime.hour, mTime.minute);
+            canvas.drawText(text, mXOffset, (float) centerY-topTextBaselineOffset, mTextWhitePaint);
             if (mMinTemp != null) {
                 // canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }
