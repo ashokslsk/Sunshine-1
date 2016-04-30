@@ -133,6 +133,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private Integer mWeatherId;
 
         private float mTimeWidth;
+        private float mDateWidth;
+        private float mTimeHeight;
+        private float mDateHeight;
 
         private static final String DEGREE_SYMBOL = "\u00b0";
 
@@ -249,8 +252,17 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
 
             mTextWhitePaint.setTextSize(textSize);
-            // Measure expected max time for determining
+            mTextLightPaint.setTextSize(resources.getDimension(R.dimen.date_text_size));
+            // Though the time and month width will vary slightly, I thought it better to not do this in onDraw for performance
             mTimeWidth = mTextWhitePaint.measureText("88:88");
+            mDateWidth = mTextLightPaint.measureText("FRI, JUL 14");
+
+            Log.d(TAG, "Time text size: " + mTextWhitePaint.getTextSize());
+            Log.d(TAG, "Date text size: " + mTextLightPaint.getTextSize());
+
+            mTimeHeight = mTextWhitePaint.getTextSize();
+            mDateHeight = mTextLightPaint.getTextSize();
+
         }
 
         @Override
@@ -362,6 +374,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // Month of the year
             Integer yearMonth = Utility.getMonth(mTime.month);
             String yearMonthAbbrev;
+            // Calculate the positioning of time and date strings based on available space
+            float topMargin = 30;
+            float dateMargin = (height/2 -mDateHeight - mTimeHeight - topMargin)/2;
             if (yearMonth != null) {
                 yearMonthAbbrev = getResources().getString(yearMonth);
             }
@@ -370,8 +385,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
             }
             String formattedDate = weekDayAbbrev + ", " + yearMonthAbbrev + " " + mTime.monthDay;
             Log.d(TAG, "Date: " + formattedDate);
-            canvas.drawText(time, (float)  centerX-mTimeWidth/2, (float) centerY-topTextBaselineOffset, mTextWhitePaint);
-            canvas.drawText(formattedDate, (float)centerX-mTimeWidth/2, (float) centerY+topTextBaselineOffset, mTextLightPaint);
+            canvas.drawText(time, (float) centerX -mTimeWidth/2, (float) centerY - dateMargin*2 - mDateHeight, mTextWhitePaint);
+            canvas.drawText(formattedDate, (float)centerX-mDateWidth/2, (float) centerY-dateMargin, mTextLightPaint);
             if (mMinTemp != null) {
                 // canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }
