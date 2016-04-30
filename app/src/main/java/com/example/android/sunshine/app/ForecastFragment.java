@@ -46,6 +46,7 @@ import android.view.ViewTreeObserver;
 import android.widget.AbsListView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.example.android.sunshine.app.data.WeatherContract;
 import com.example.android.sunshine.app.sync.SunshineSyncAdapter;
 import com.google.android.gms.common.ConnectionResult;
@@ -75,6 +76,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     private static final String DATA_LAYER_PATH = "/data";
     public static final String KEY_MIN_TEMP = "min_temp";
     public static final String KEY_MAX_TEMP = "max_temp";
+    public static final String KEY_WEATHER_CONDITION_ID = "weather_id";
 
     private static final int FORECAST_LOADER = 0;
     // For the forecast view we're showing only a small subset of the stored data.
@@ -390,10 +392,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                 }
             });
         }
-
     }
-
-
 
     @Override
     public void onDestroy() {
@@ -403,7 +402,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         }
         if (null != mRecyclerView) {
             mRecyclerView.clearOnScrollListeners();
-
         }
     }
 
@@ -460,7 +458,7 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             updateEmptyView();
         }
     }
-    private void updateWearable(Cursor previousCursor, Cursor currentCursor) {
+    private void updateWearable(Cursor previousCursor, final Cursor currentCursor) {
         final Double currentMax;
         final Double currentMin;
         Double lastMax;
@@ -484,7 +482,6 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
             lastMax = null;
             lastMin = null;
         }
-
         // compare previous and current adapter loaded Max and Min temps
         if (lastMax != currentMax || lastMin != currentMin) {
             Log.d(LOG_TAG, "Update wearable data");
@@ -496,9 +493,16 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                             Log.d(LOG_TAG, "onConnected: " + connectionHint);
                             // Now you can use the Data Layer API
                             PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
-                            putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, currentMin);
-                            putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, currentMax);
-                            //putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
+
+                            int minTemp = (int) Math.round(currentMin);
+                            int maxTemp = (int) Math.round(currentMax);
+
+                            putDataMapReq.getDataMap().putInt(KEY_MIN_TEMP, minTemp);
+                            putDataMapReq.getDataMap().putInt(KEY_MAX_TEMP, maxTemp);
+
+                            int weatherId = currentCursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+                            putDataMapReq.getDataMap().putInt(KEY_WEATHER_CONDITION_ID, weatherId);
+
                             PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                             PendingResult<DataApi.DataItemResult> pendingResult =
                                     Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
@@ -519,14 +523,9 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
                     .addApi(Wearable.API)
                     .build();
             mGoogleApiClient.connect();
-
-
         }
         else {
             Log.d(LOG_TAG, "Do not update wearable data");
         }
-
-
-
     }
 }

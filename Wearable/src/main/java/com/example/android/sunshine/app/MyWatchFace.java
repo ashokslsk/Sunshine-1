@@ -124,8 +124,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private float mXOffset;
         private float mYOffset;
 
-        private Long mMinTemp;
-        private Long mMaxTemp;
+        private Integer mMinTemp;
+        private Integer mMaxTemp;
 
         private static final String DEGREE_SYMBOL = "\u00b0";
 
@@ -329,11 +329,12 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
             if (mMinTemp != null) {
-                canvas.drawText(Long.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
+                canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }
             if (mMaxTemp != null) {
-                canvas.drawText(Long.toString(mMaxTemp) + DEGREE_SYMBOL, mXOffset+120, mYOffset+80, mTextPaint);
+                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, mXOffset+120, mYOffset+80, mTextPaint);
             }
+
         }
 
         /**
@@ -402,11 +403,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     Log.d(TAG, "Key: " + configKey + "updated");
                     if (configKey.equals(KEY_MIN_TEMP)) {
 
-                        mMinTemp = Math.round(config.getDouble(KEY_MIN_TEMP));
+                        mMinTemp = config.getInt(KEY_MIN_TEMP);
                         Log.d(TAG, "min temp updated to: " + mMinTemp);
                     }
                     if (configKey.equals(KEY_MAX_TEMP)) {
-                        mMaxTemp = Math.round(config.getDouble(KEY_MAX_TEMP));
+                        mMaxTemp = config.getInt(KEY_MAX_TEMP);
                         Log.d(TAG, "max temp updated to: " + mMaxTemp);
                     }
 //                    if (configKey.equals("time")) {
