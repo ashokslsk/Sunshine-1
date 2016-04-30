@@ -342,72 +342,10 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         boolean updateWearable = false;
         Log.d(LOG_TAG, "onLoadFinished running..");
-        // Compare the previous cursor data to newly loaded data
+
         Cursor lastCursor = mForecastAdapter.getCursor();
-
-            final Double currentMax;
-            final Double currentMin;
-            Double lastMax;
-            Double lastMin;
-            if (data != null && data.getCount()>0) {
-                data.moveToFirst();
-                currentMax = data.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-                currentMin = data.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-            }
-            else {
-                currentMax = null;
-                currentMin= null;
-            }
-            if (lastCursor != null && lastCursor.getCount()>0) {
-                lastCursor.moveToFirst();
-                lastMax = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
-                lastMin = lastCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
-            }
-            else {
-                lastMax = null;
-                lastMin = null;
-            }
-            // compare previous and current adapter loaded Max and Min temps
-            if (lastMax != currentMax || lastMin != currentMin) {
-                Log.d(LOG_TAG, "Update wearable data");
-
-                mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                        .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
-                            @Override
-                            public void onConnected(Bundle connectionHint) {
-                                Log.d(LOG_TAG, "onConnected: " + connectionHint);
-                                // Now you can use the Data Layer API
-                                PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
-                                putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, currentMin);
-                                putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, currentMax);
-                                //putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
-                                PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
-                                PendingResult<DataApi.DataItemResult> pendingResult =
-                                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
-                                Log.d(LOG_TAG, "Putting data map request ");
-                            }
-                            @Override
-                            public void onConnectionSuspended(int cause) {
-                                Log.d(LOG_TAG, "onConnectionSuspended: " + cause);
-                            }
-                        })
-                        .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
-                            @Override
-                            public void onConnectionFailed(ConnectionResult result) {
-                                Log.d(LOG_TAG, "onConnectionFailed: " + result);
-                            }
-                        })
-                                // Request access only to the Wearable API
-                        .addApi(Wearable.API)
-                        .build();
-                mGoogleApiClient.connect();
-
-
-            }
-            else {
-                Log.d(LOG_TAG, "Do not update wearable data");
-            }
-
+        // Compare the previous cursor data to newly loaded data and update if necessary
+        updateWearable(lastCursor, data);
 
         mForecastAdapter.swapCursor(data);
         updateEmptyView();
@@ -521,5 +459,74 @@ public class ForecastFragment extends Fragment implements LoaderManager.LoaderCa
         if (key.equals(getString(R.string.pref_location_status_key))) {
             updateEmptyView();
         }
+    }
+    private void updateWearable(Cursor previousCursor, Cursor currentCursor) {
+        final Double currentMax;
+        final Double currentMin;
+        Double lastMax;
+        Double lastMin;
+
+        if (currentCursor != null && currentCursor.getCount()>0) {
+            currentCursor.moveToFirst();
+            currentMax = currentCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
+            currentMin = currentCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+        }
+        else {
+            currentMax = null;
+            currentMin= null;
+        }
+        if (previousCursor != null && previousCursor.getCount()>0) {
+            previousCursor.moveToFirst();
+            lastMax = previousCursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP);
+            lastMin = previousCursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP);
+        }
+        else {
+            lastMax = null;
+            lastMin = null;
+        }
+
+        // compare previous and current adapter loaded Max and Min temps
+        if (lastMax != currentMax || lastMin != currentMin) {
+            Log.d(LOG_TAG, "Update wearable data");
+
+            mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
+                    .addConnectionCallbacks(new GoogleApiClient.ConnectionCallbacks() {
+                        @Override
+                        public void onConnected(Bundle connectionHint) {
+                            Log.d(LOG_TAG, "onConnected: " + connectionHint);
+                            // Now you can use the Data Layer API
+                            PutDataMapRequest putDataMapReq = PutDataMapRequest.create(DATA_LAYER_PATH);
+                            putDataMapReq.getDataMap().putDouble(KEY_MIN_TEMP, currentMin);
+                            putDataMapReq.getDataMap().putDouble(KEY_MAX_TEMP, currentMax);
+                            //putDataMapReq.getDataMap().putLong("time",System.currentTimeMillis());
+                            PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+                            PendingResult<DataApi.DataItemResult> pendingResult =
+                                    Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+                            Log.d(LOG_TAG, "Putting data map request ");
+                        }
+                        @Override
+                        public void onConnectionSuspended(int cause) {
+                            Log.d(LOG_TAG, "onConnectionSuspended: " + cause);
+                        }
+                    })
+                    .addOnConnectionFailedListener(new GoogleApiClient.OnConnectionFailedListener() {
+                        @Override
+                        public void onConnectionFailed(ConnectionResult result) {
+                            Log.d(LOG_TAG, "onConnectionFailed: " + result);
+                        }
+                    })
+                            // Request access only to the Wearable API
+                    .addApi(Wearable.API)
+                    .build();
+            mGoogleApiClient.connect();
+
+
+        }
+        else {
+            Log.d(LOG_TAG, "Do not update wearable data");
+        }
+
+
+
     }
 }

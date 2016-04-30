@@ -73,6 +73,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
     public static final String KEY_MIN_TEMP = "min_temp";
     public static final String KEY_MAX_TEMP = "max_temp";
 
+
+
     @Override
     public Engine onCreateEngine() {
         return new Engine();
@@ -119,11 +121,14 @@ public class MyWatchFace extends CanvasWatchFaceService {
         };
         int mTapCount;
 
-        float mXOffset;
-        float mYOffset;
+        private float mXOffset;
+        private float mYOffset;
 
-        Long mMinTemp;
-        Long mMaxTemp;
+        private Long mMinTemp;
+        private Long mMaxTemp;
+
+        private static final String DEGREE_SYMBOL = "\u00b0";
+
 
 
         GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(MyWatchFace.this)
@@ -324,10 +329,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
             canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
             if (mMinTemp != null) {
-                canvas.drawText(Long.toString(mMinTemp), mXOffset, mYOffset+80, mTextPaint);
+                canvas.drawText(Long.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }
             if (mMaxTemp != null) {
-                canvas.drawText(Long.toString(mMaxTemp), mXOffset+120, mYOffset+80, mTextPaint);
+                canvas.drawText(Long.toString(mMaxTemp) + DEGREE_SYMBOL, mXOffset+120, mYOffset+80, mTextPaint);
             }
         }
 
