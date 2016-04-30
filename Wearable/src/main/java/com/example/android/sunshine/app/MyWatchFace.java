@@ -110,7 +110,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
         Paint mBackgroundPaint;
-        Paint mTextPaint;
+        Paint mTextWhitePaint;
+        Paint mTextLightPaint;
         boolean mAmbient;
         Time mTime;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
@@ -165,8 +166,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setColor(resources.getColor(R.color.primary));
 
-            mTextPaint = new Paint();
-            mTextPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mTextWhitePaint = new Paint();
+            mTextWhitePaint = createTextPaint(resources.getColor(R.color.digital_text));
+
+            mTextLightPaint = new Paint();
+            mTextLightPaint = createTextPaint(resources.getColor(R.color.primary_light));
 
             mTime = new Time();
             Log.d(TAG, "WatchFaceService onCreate running..");
@@ -242,7 +246,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
 
-            mTextPaint.setTextSize(textSize);
+            mTextWhitePaint.setTextSize(textSize);
         }
 
         @Override
@@ -272,7 +276,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             if (mAmbient != inAmbientMode) {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
-                    mTextPaint.setAntiAlias(!inAmbientMode);
+                    mTextWhitePaint.setAntiAlias(!inAmbientMode);
                 }
                 // force onDraw refresh after these changes
                 if (!mAmbient) {
@@ -319,24 +323,36 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // onDraw is called alot, so should be efficient
             // it is called in both ambient and interactive mode
             Log.d(TAG, "onDraw called");
+
+            int width = bounds.width();
+            int height = bounds.height();
+            Log.d(TAG, "bounds.width(): " + bounds.width());
+            Log.d(TAG, "bounds.height(): " + bounds.height());
             // Draw the background.
             if (isInAmbientMode()) {
                 canvas.drawColor(Color.BLACK);
             } else {
-                canvas.drawRect(0, 0, bounds.width(), bounds.height(), mBackgroundPaint);
+                canvas.drawRect(0, 0, width, height, mBackgroundPaint);
+
             }
+            double centerX = width / 2f;
+            double centerY = height / 2f;
+            // Draw Line Separator
+            int lineLength = width/4;
+            canvas.drawLine((float) centerX-lineLength/2, (float) centerY, (float) centerX+lineLength/2, (float) centerY, mTextLightPaint);
+
 
             // Draw H:MM in ambient mode or H:MM:SS in interactive mode.
             mTime.setToNow();
             String text = mAmbient
                     ? String.format("%d:%02d", mTime.hour, mTime.minute)
                     : String.format("%d:%02d:%02d", mTime.hour, mTime.minute, mTime.second);
-            canvas.drawText(text, mXOffset, mYOffset, mTextPaint);
+            canvas.drawText(text, mXOffset, mYOffset-40, mTextWhitePaint);
             if (mMinTemp != null) {
-                canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
+                // canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, mXOffset, mYOffset+80, mTextPaint);
             }
             if (mMaxTemp != null) {
-                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, mXOffset+120, mYOffset+80, mTextPaint);
+                // canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, mXOffset+120, mYOffset+80, mTextPaint);
             }
 
             // TEMP - try drawing on canvas
