@@ -262,6 +262,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         public void onApplyWindowInsets(WindowInsets insets) {
             super.onApplyWindowInsets(insets);
 
+
             // Load resources that have alternate values for round watches.
             Resources resources = MyWatchFace.this.getResources();
             boolean isRound = insets.isRound();
@@ -273,13 +274,13 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mTextWhitePaint.setTextSize(textSize);
             mTextLightPaint.setTextSize(resources.getDimension(R.dimen.date_text_size));
             //TODO - replace with independent sizes
-            mTextLowTempPaint.setTextSize(resources.getDimension(R.dimen.date_text_size));
-            mTextHighTempPaint.setTextSize(resources.getDimension(R.dimen.date_text_size));
-            // Though the time and month width will vary slightly, I thought it better to not do this in onDraw for performance
-            mTimeWidth = mTextWhitePaint.measureText("88:88");
-            mDateWidth = mTextLightPaint.measureText("FRI, JUL 14");
-            mHighTempWidth = mTextHighTempPaint.measureText("25" + DEGREE_SYMBOL);
-            mLowTempWidth = mTextLowTempPaint.measureText("16" + DEGREE_SYMBOL);
+            mTextLowTempPaint.setTextSize(resources.getDimension(R.dimen.min_temp_text_size));
+            mTextHighTempPaint.setTextSize(resources.getDimension(R.dimen.max_temp_text_size));
+            //
+//            mTimeWidth = mTextWhitePaint.measureText("88:88");
+//            mDateWidth = mTextLightPaint.measureText("FRI, JUL 14");
+//            mHighTempWidth = mTextHighTempPaint.measureText("25" + DEGREE_SYMBOL);
+//            mLowTempWidth = mTextLowTempPaint.measureText("16" + DEGREE_SYMBOL);
 
             Log.d(TAG, "Time text size: " + mTextWhitePaint.getTextSize());
             Log.d(TAG, "Date text size: " + mTextLightPaint.getTextSize());
@@ -383,6 +384,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // Draw Line Separator
             int lineLength = width/4;
             canvas.drawLine((float) centerX-lineLength/2, (float) centerY, (float) centerX+lineLength/2, (float) centerY, mTextLightPaint);
+
             float topTextBaselineOffset = height/2/5;
 
             // Draw H:MM in ambient and interactive modes
@@ -412,19 +414,35 @@ public class MyWatchFace extends CanvasWatchFaceService {
             String formattedDate = weekDayAbbrev + ", " + yearMonthAbbrev + " " + mTime.monthDay;
             Log.d(TAG, "Date: " + formattedDate);
             // Draw date and time on top half of watch
-            canvas.drawText(time, (float) centerX -mTimeWidth/2, (float) centerY - dateMargin*2 - mDateHeight, mTextWhitePaint);
-            canvas.drawText(formattedDate, (float)centerX-mDateWidth/2, (float) centerY-dateMargin, mTextLightPaint);
+
 
             // draw
 
+            mHighTempWidth = 30;
+            mLowTempWidth = 30;
+            // Measure the text to be drawn on the screen
+
+            mTimeWidth = mTextWhitePaint.measureText(time);
+            mDateWidth = mTextLightPaint.measureText(formattedDate);
+            if (mMaxTemp != null && mMinTemp != null) {
+                mHighTempWidth = mTextHighTempPaint.measureText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL);
+                mLowTempWidth = mTextLowTempPaint.measureText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL);
+            }
+
             int artMargin = (int) getResources().getDimension(R.dimen.art_margin_top);
             int artSize = (int) getResources().getDimension(R.dimen.weather_art_size);
+            float centerOfArt = (artSize - mHighTempHeight)/2;
+            // TODO - fine tune this
+            float textBaseline = (float) centerY+artSize;
             int weatherInfoSpacing = (int) (width - artSize - mLowTempWidth - mHighTempWidth)/4;
+
+            canvas.drawText(time, (float) centerX -mTimeWidth/2, (float) centerY - dateMargin*2 - mDateHeight, mTextWhitePaint);
+            canvas.drawText(formattedDate, (float)centerX-mDateWidth/2, (float) centerY-dateMargin, mTextLightPaint);
             if (mMinTemp != null) {
-                canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, (float) centerX+mLowTempWidth/2+weatherInfoSpacing, (float) centerY+mLowTempHeight+artMargin, mTextLowTempPaint);
+                canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, (float) centerX+mLowTempWidth/2+weatherInfoSpacing, textBaseline, mTextLowTempPaint);
             }
             if (mMaxTemp != null) {
-                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, (float) centerX-mLowTempWidth/2, (float) centerY+mHighTempHeight+artMargin, mTextHighTempPaint);
+                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, (float) centerX-mLowTempWidth/2, textBaseline, mTextHighTempPaint);
             }
 
             // TEMP - try drawing on canvas
