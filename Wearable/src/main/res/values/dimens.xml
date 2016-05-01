@@ -10,6 +10,8 @@
     <dimen name="max_temp_text_size">40dp</dimen>
     <dimen name="min_temp_text_size">35dp</dimen>
 
+    <dimen name="art_margin_top">30dp</dimen>
+
 
     <dimen name="digital_x_offset">15dp</dimen>
     <dimen name="digital_x_offset_round">25dp</dimen>
