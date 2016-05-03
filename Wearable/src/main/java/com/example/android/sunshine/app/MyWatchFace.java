@@ -35,6 +35,7 @@ import android.support.wearable.watchface.CanvasWatchFaceService;
 import android.support.wearable.watchface.WatchFaceStyle;
 import android.text.format.Time;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.SurfaceHolder;
 import android.view.WindowInsets;
 
@@ -113,8 +114,8 @@ public class MyWatchFace extends CanvasWatchFaceService {
         Paint mBackgroundPaint;
         Paint mTextWhitePaint;
         Paint mTextLightPaint;
-        Paint mTextHighTempPaint;
-        Paint mTextLowTempPaint;
+        Paint mTextMaxTempPaint;
+        Paint mTextMinTempPaint;
 
 
         boolean mAmbient;
@@ -142,10 +143,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private float mTimeHeight;
         private float mDateHeight;
 
-        private float mHighTempWidth;
-        private float mLowTempWidth;
+        private float mMaxTempWidth;
+        private float mMinTempWidth;
 
-        private float mHighTempHeight;
+        private float mMaxTempHeight;
         private float mLowTempHeight;
 
         private static final String DEGREE_SYMBOL = "\u00b0";
@@ -188,11 +189,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mTextLightPaint = new Paint();
             mTextLightPaint = createTextPaint(resources.getColor(R.color.primary_light));
 
-            mTextHighTempPaint = new Paint();
-            mTextHighTempPaint = createTextPaint(resources.getColor(R.color.digital_text));
+            mTextMaxTempPaint = new Paint();
+            mTextMaxTempPaint = createTextPaint(resources.getColor(R.color.digital_text));
 
-            mTextLowTempPaint = new Paint();
-            mTextLowTempPaint = createTextPaint(resources.getColor(R.color.primary_light));
+            mTextMinTempPaint = new Paint();
+            mTextMinTempPaint = createTextPaint(resources.getColor(R.color.primary_light));
 
 
 
@@ -274,21 +275,16 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mTextWhitePaint.setTextSize(textSize);
             mTextLightPaint.setTextSize(resources.getDimension(R.dimen.date_text_size));
             //TODO - replace with independent sizes
-            mTextLowTempPaint.setTextSize(resources.getDimension(R.dimen.min_temp_text_size));
-            mTextHighTempPaint.setTextSize(resources.getDimension(R.dimen.max_temp_text_size));
-            //
-//            mTimeWidth = mTextWhitePaint.measureText("88:88");
-//            mDateWidth = mTextLightPaint.measureText("FRI, JUL 14");
-//            mHighTempWidth = mTextHighTempPaint.measureText("25" + DEGREE_SYMBOL);
-//            mLowTempWidth = mTextLowTempPaint.measureText("16" + DEGREE_SYMBOL);
+            mTextMinTempPaint.setTextSize(resources.getDimension(R.dimen.min_temp_text_size));
+            mTextMaxTempPaint.setTextSize(resources.getDimension(R.dimen.max_temp_text_size));
 
             Log.d(TAG, "Time text size: " + mTextWhitePaint.getTextSize());
             Log.d(TAG, "Date text size: " + mTextLightPaint.getTextSize());
 
             mTimeHeight = mTextWhitePaint.getTextSize();
             mDateHeight = mTextLightPaint.getTextSize();
-            mHighTempHeight = mTextHighTempPaint.getTextSize();
-            mLowTempHeight = mTextLowTempPaint.getTextSize();
+            mMaxTempHeight = mTextMaxTempPaint.getTextSize();
+            mLowTempHeight = mTextMinTempPaint.getTextSize();
 
         }
 
@@ -326,7 +322,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
                 }
                 else {
-
 
                 }
                 invalidate();
@@ -402,8 +397,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // Month of the year
             Integer yearMonth = Utility.getMonth(mTime.month);
             String yearMonthAbbrev;
+
             // Calculate the positioning of time and date strings based on available space
-            float topMargin = 30;
+            float topMargin = 30;   // in pixels
             float dateMargin = (height/2 -mDateHeight - mTimeHeight - topMargin)/2;
             if (yearMonth != null) {
                 yearMonthAbbrev = getResources().getString(yearMonth);
@@ -412,47 +408,47 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 yearMonthAbbrev = "";
             }
             String formattedDate = weekDayAbbrev + ", " + yearMonthAbbrev + " " + mTime.monthDay;
-            Log.d(TAG, "Date: " + formattedDate);
-            // Draw date and time on top half of watch
 
-
-            // draw
-
-            mHighTempWidth = 30;
-            mLowTempWidth = 30;
             // Measure the text to be drawn on the screen
 
             mTimeWidth = mTextWhitePaint.measureText(time);
             mDateWidth = mTextLightPaint.measureText(formattedDate);
+
             if (mMaxTemp != null && mMinTemp != null) {
-                mHighTempWidth = mTextHighTempPaint.measureText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL);
-                mLowTempWidth = mTextLowTempPaint.measureText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL);
+                mMaxTempWidth = mTextMaxTempPaint.measureText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL);
+                mMinTempWidth = mTextMinTempPaint.measureText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL);
             }
 
-            int artMargin = (int) getResources().getDimension(R.dimen.art_margin_top);
-            int artSize = (int) getResources().getDimension(R.dimen.weather_art_size);
-            float centerOfArt = (artSize - mHighTempHeight)/2;
-            // TODO - fine tune this
-            float textBaseline = (float) centerY+artSize;
-            int weatherInfoSpacing = (int) (width - artSize - mLowTempWidth - mHighTempWidth)/4;
+            // convert DP to pixels
 
-            canvas.drawText(time, (float) centerX -mTimeWidth/2, (float) centerY - dateMargin*2 - mDateHeight, mTextWhitePaint);
+            // Draw the top half of screen
+            canvas.drawText(time, (float) centerX - mTimeWidth / 2, (float) centerY - dateMargin * 2 - mDateHeight, mTextWhitePaint);
             canvas.drawText(formattedDate, (float)centerX-mDateWidth/2, (float) centerY-dateMargin, mTextLightPaint);
-            if (mMinTemp != null) {
-                canvas.drawText(Integer.toString(mMinTemp)+ DEGREE_SYMBOL, (float) centerX+mLowTempWidth/2+weatherInfoSpacing, textBaseline, mTextLowTempPaint);
-            }
-            if (mMaxTemp != null) {
-                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, (float) centerX-mLowTempWidth/2, textBaseline, mTextHighTempPaint);
-            }
 
-            // TEMP - try drawing on canvas
+            // Draw the bottom half of the screen
+            // Canvas uses px - need to convert from dp and do math in px
+            Resources r = getResources();
+            int artMargin = (int) getResources().getDimension(R.dimen.art_margin_top);
+            float artMarginPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, artMargin, r.getDisplayMetrics());
+            int art = (int) getResources().getDimension(R.dimen.weather_art_size);
+            float artPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, art, r.getDisplayMetrics());
+
+            float offsetTextPx = (artPx - mMaxTempHeight)/2f;
+            float textBaselinePx = (float) centerY+artMarginPx+artPx-offsetTextPx;
+            // equal spacing between art,
+            int weatherInfoSpacing = (int) ((width - artPx - mMinTempWidth - mMaxTempWidth)/4);
             if (mWeatherId != null){
                 int weatherImage = Utility.getArtResourceForWeatherCondition(mWeatherId);
-
                 Drawable weatherArt = ResourcesCompat.getDrawable(getResources(), weatherImage, null);
-                weatherArt.setBounds((int) (centerX - artSize - weatherInfoSpacing - mHighTempWidth/2),
-                        (int) (centerY + artMargin), (int) (centerX - weatherInfoSpacing-mHighTempWidth/2), (int) centerY+artSize + artMargin);
+                weatherArt.setBounds((int) (weatherInfoSpacing),
+                        (int) (centerY + artMarginPx), (int) (weatherInfoSpacing+artPx), (int) (centerY+artPx + artMarginPx));
                 weatherArt.draw(canvas);
+            }
+            if (mMaxTemp != null) {
+                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, (float) 2*weatherInfoSpacing+artPx, textBaselinePx, mTextMaxTempPaint);
+            }
+            if (mMinTemp != null) {
+                canvas.drawText(Integer.toString(mMinTemp) + DEGREE_SYMBOL, (float) 3*weatherInfoSpacing + artPx + mMaxTempWidth, textBaselinePx, mTextMinTempPaint);
             }
         }
 
@@ -496,10 +492,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 Log.d(TAG, "onConnected: " + bundle);
             }
             // notify Google Play services that we are interested in listening for data layer events
-
             Wearable.DataApi.addListener(mGoogleApiClient, Engine.this);
-//            // TODO update data
-//
         }
 
         @Override
@@ -533,15 +526,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
                         mWeatherId = config.getInt(KEY_WEATHER_CONDITION_ID);
                         Log.d(TAG, "weather condition id updated to : " + mWeatherId);
                     }
-//                    if (configKey.equals("time")) {
-//                        Long timeStamp = config.getLong("time");
-//                        Log.d(TAG, "timeStamp updated to: " + timeStamp);
-//                    }
                 }
-
             }
         }
-
         @Override
         public void onConnectionFailed(ConnectionResult connectionResult) {
             Log.d(TAG, "onConnectionFailed running...");

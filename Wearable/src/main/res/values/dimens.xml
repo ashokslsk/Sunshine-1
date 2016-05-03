@@ -6,11 +6,12 @@
 
     <dimen name="date_text_size">15dp</dimen>
 
-    <dimen name="weather_art_size">40dp</dimen>
-    <dimen name="max_temp_text_size">40dp</dimen>
-    <dimen name="min_temp_text_size">35dp</dimen>
+    // Note: Art size > Text Size
+    <dimen name="weather_art_size">35dp</dimen>
+    <dimen name="max_temp_text_size">35dp</dimen>
+    <dimen name="min_temp_text_size">30dp</dimen>
 
-    <dimen name="art_margin_top">30dp</dimen>
+    <dimen name="art_margin_top">5dp</dimen>
 
 
     <dimen name="digital_x_offset">15dp</dimen>
