@@ -64,10 +64,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
             Typeface.create(Typeface.SANS_SERIF, Typeface.NORMAL);
 
     /**
-     * Update rate in milliseconds for interactive mode. We update once a second since seconds are
-     * displayed in interactive mode.
+     * Update rate in milliseconds for interactive mode. Currently updates every 10 seconds
      */
-    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(1);
+    private static final long INTERACTIVE_UPDATE_RATE_MS = TimeUnit.SECONDS.toMillis(10);
 
     /**
      * Handler message id for updating the time periodically in interactive mode.
@@ -311,6 +310,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
         public void onDraw(Canvas canvas, Rect bounds) {
             // onDraw is called alot, so should be efficient
             // it is called in both ambient and interactive mode
+            Log.d(TAG, "onDraw");
 
             int width = bounds.width();
             int height = bounds.height();
