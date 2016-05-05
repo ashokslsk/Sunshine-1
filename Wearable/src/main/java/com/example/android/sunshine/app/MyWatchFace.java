@@ -289,6 +289,9 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 mAmbient = inAmbientMode;
                 if (mLowBitAmbient) {
                     mTextWhitePaint.setAntiAlias(!inAmbientMode);
+                    mTextLightPaint.setAntiAlias(!inAmbientMode);
+                    mTextMaxTempPaint.setAntiAlias(!inAmbientMode);
+                    mTextMinTempPaint.setAntiAlias(!inAmbientMode);
                 }
                 // force onDraw refresh after these changes
                 if (!mAmbient) {
@@ -299,7 +302,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
                 }
                 invalidate();
             }
-
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
             updateTimer();
