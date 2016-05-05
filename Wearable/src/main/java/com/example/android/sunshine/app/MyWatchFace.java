@@ -78,13 +78,10 @@ public class MyWatchFace extends CanvasWatchFaceService {
     public static final String KEY_MAX_TEMP = "max_temp";
     public static final String KEY_WEATHER_CONDITION_ID = "weather_id";
 
-
-
     @Override
     public Engine onCreateEngine() {
         return new Engine();
     }
-
 
     private static class EngineHandler extends Handler {
         private final WeakReference<MyWatchFace.Engine> mWeakReference;
@@ -109,8 +106,11 @@ public class MyWatchFace extends CanvasWatchFaceService {
     private class Engine extends CanvasWatchFaceService.Engine
             implements DataApi.DataListener,
             GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+
         final Handler mUpdateTimeHandler = new EngineHandler(this);
         boolean mRegisteredTimeZoneReceiver = false;
+
+        private static final String DEGREE_SYMBOL = "\u00b0";
 
         Paint mBackgroundPaint;
         Paint mTextWhitePaint;
@@ -118,23 +118,16 @@ public class MyWatchFace extends CanvasWatchFaceService {
         Paint mTextMaxTempPaint;
         Paint mTextMinTempPaint;
 
-
         boolean mAmbient;
         Time mTime;
         final BroadcastReceiver mTimeZoneReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
                 //TODO Time classes used in this example are different than the watch face sample.  Which impelemntation is better?
-                Log.d(TAG, "BroadcastReceiver onReceive run..");
                 mTime.clear(intent.getStringExtra("time-zone"));
                 mTime.setToNow();
             }
         };
-        int mTapCount;
-
-        private float mXOffset;
-        private float mYOffset;
-
         private Integer mMinTemp;
         private Integer mMaxTemp;
         private Integer mWeatherId;
@@ -143,23 +136,15 @@ public class MyWatchFace extends CanvasWatchFaceService {
         private float mDateWidth;
         private float mTimeHeight;
         private float mDateHeight;
-
         private float mMaxTempWidth;
         private float mMinTempWidth;
-
         private float mMaxTempHeight;
-        private float mLowTempHeight;
-
-        private static final String DEGREE_SYMBOL = "\u00b0";
-
-
 
         GoogleApiClient mGoogleApiClient = new GoogleApiClient.Builder(MyWatchFace.this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .addApi(Wearable.API)
                 .build();
-
 
         /**
          * Whether the display supports fewer bits for each color in ambient mode. When true, we
@@ -171,7 +156,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
         public void onCreate(SurfaceHolder holder) {
             super.onCreate(holder);
 
-
             setWatchFaceStyle(new WatchFaceStyle.Builder(MyWatchFace.this)
                     .setCardPeekMode(WatchFaceStyle.PEEK_MODE_VARIABLE)
                     .setBackgroundVisibility(WatchFaceStyle.BACKGROUND_VISIBILITY_INTERRUPTIVE)
@@ -181,7 +165,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     //.setHotwordIndicatorGravity(Gravity.RIGHT | Gravity.TOP)
                     .build());
             Resources resources = MyWatchFace.this.getResources();
-            mYOffset = resources.getDimension(R.dimen.digital_y_offset);
 
             mBackgroundPaint = new Paint();
             mBackgroundPaint.setColor(resources.getColor(R.color.primary));
@@ -198,10 +181,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
             mTextMinTempPaint = new Paint();
             mTextMinTempPaint = createTextPaint(resources.getColor(R.color.primary_light));
 
-
-
             mTime = new Time();
-            Log.d(TAG, "WatchFaceService onCreate running..");
         }
 
         @Override
@@ -225,7 +205,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
             if (visible) {
                 registerReceiver();
                 mGoogleApiClient.connect();
-                Log.d(TAG, "connecting GoogleApiClient");
 
                 // Update time zone in case it changed while we weren't visible.
                 mTime.clear(TimeZone.getDefault().getID());
@@ -239,7 +218,6 @@ public class MyWatchFace extends CanvasWatchFaceService {
                     Log.d(TAG, "disconnecting GoogleApiClient");
                 }
             }
-
             // Whether the timer should be running depends on whether we're visible (as well as
             // whether we're in ambient mode), so we may need to start or stop the timer.
             updateTimer();
@@ -266,29 +244,21 @@ public class MyWatchFace extends CanvasWatchFaceService {
         public void onApplyWindowInsets(WindowInsets insets) {
             super.onApplyWindowInsets(insets);
 
-
             // Load resources that have alternate values for round watches.
             Resources resources = MyWatchFace.this.getResources();
             boolean isRound = insets.isRound();
-            mXOffset = resources.getDimension(isRound
-                    ? R.dimen.digital_x_offset_round : R.dimen.digital_x_offset);
+
             float textSize = resources.getDimension(isRound
                     ? R.dimen.digital_text_size_round : R.dimen.digital_text_size);
 
             mTextWhitePaint.setTextSize(textSize);
             mTextLightPaint.setTextSize(resources.getDimension(R.dimen.date_text_size));
-            //TODO - replace with independent sizes
             mTextMinTempPaint.setTextSize(resources.getDimension(R.dimen.min_temp_text_size));
             mTextMaxTempPaint.setTextSize(resources.getDimension(R.dimen.max_temp_text_size));
-
-            Log.d(TAG, "Time text size: " + mTextWhitePaint.getTextSize());
-            Log.d(TAG, "Date text size: " + mTextLightPaint.getTextSize());
 
             mTimeHeight = mTextWhitePaint.getTextSize();
             mDateHeight = mTextLightPaint.getTextSize();
             mMaxTempHeight = mTextMaxTempPaint.getTextSize();
-            mLowTempHeight = mTextMinTempPaint.getTextSize();
-
         }
 
         @Override
@@ -334,18 +304,15 @@ public class MyWatchFace extends CanvasWatchFaceService {
             // whether we're in ambient mode), so we may need to start or stop the timer.
             updateTimer();
         }
-        
 
         @Override
         public void onDraw(Canvas canvas, Rect bounds) {
             // onDraw is called alot, so should be efficient
             // it is called in both ambient and interactive mode
-            Log.d(TAG, "onDraw called");
 
             int width = bounds.width();
             int height = bounds.height();
-            Log.d(TAG, "bounds.width(): " + bounds.width());
-            Log.d(TAG, "bounds.height(): " + bounds.height());
+
             // Draw the background.
             if (isInAmbientMode()) {
                 canvas.drawColor(Color.BLACK);
@@ -483,28 +450,19 @@ public class MyWatchFace extends CanvasWatchFaceService {
         @Override
         public void onDataChanged(DataEventBuffer dataEventBuffer) {
             for (DataEvent event : dataEventBuffer) {
-                if (event.getType() == DataEvent.TYPE_DELETED) {
-                    Log.d(TAG, "DataItem deleted: " + event.getDataItem().getUri());
-                } else if (event.getType() == DataEvent.TYPE_CHANGED) {
-                    Log.d(TAG, "DataItem changed: " + event.getDataItem().getUri());
-                }
+
                 DataItem dataItem = event.getDataItem();
                 DataMapItem dataMapItem = DataMapItem.fromDataItem(dataItem);
                 DataMap config = dataMapItem.getDataMap();
                 for (String configKey : config.keySet()) {
-                    Log.d(TAG, "Key: " + configKey + "updated");
                     if (configKey.equals(KEY_MIN_TEMP)) {
-
                         mMinTemp = config.getInt(KEY_MIN_TEMP);
-                        Log.d(TAG, "min temp updated to: " + mMinTemp);
                     }
                     if (configKey.equals(KEY_MAX_TEMP)) {
                         mMaxTemp = config.getInt(KEY_MAX_TEMP);
-                        Log.d(TAG, "max temp updated to: " + mMaxTemp);
                     }
                     if (configKey.equals(KEY_WEATHER_CONDITION_ID)) {
                         mWeatherId = config.getInt(KEY_WEATHER_CONDITION_ID);
-                        Log.d(TAG, "weather condition id updated to : " + mWeatherId);
                     }
                 }
             }
@@ -515,5 +473,4 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         }
     }
-
 }
