@@ -13,7 +13,6 @@
 
     <dimen name="art_margin_top">5dp</dimen>
 
-
     <dimen name="digital_x_offset">15dp</dimen>
     <dimen name="digital_x_offset_round">25dp</dimen>
     <dimen name="digital_y_offset">90dp</dimen>
