@@ -374,30 +374,32 @@ public class MyWatchFace extends CanvasWatchFaceService {
             canvas.drawText(time, (float) centerX - mTimeWidth / 2, (float) centerY - dateMargin * 2 - mDateHeight, mTextWhitePaint);
             canvas.drawText(formattedDate, (float)centerX-mDateWidth/2, (float) centerY-dateMargin, mTextLightPaint);
 
-            // Draw the bottom half of the screen
-            // Canvas uses px - need to convert from dp and do math in px
-            Resources r = getResources();
-            int artMargin = (int) getResources().getDimension(R.dimen.art_margin_top);
-            float artMarginPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, artMargin, r.getDisplayMetrics());
-            int art = (int) getResources().getDimension(R.dimen.weather_art_size);
-            float artPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, art, r.getDisplayMetrics());
+            // Draw the bottom half of the screen, if not in ambient mode
+            if (!isInAmbientMode()) {
+                // Canvas uses px - need to convert from dp and do math in px
+                Resources r = getResources();
+                int artMargin = (int) getResources().getDimension(R.dimen.art_margin_top);
+                float artMarginPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, artMargin, r.getDisplayMetrics());
+                int art = (int) getResources().getDimension(R.dimen.weather_art_size);
+                float artPx = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, art, r.getDisplayMetrics());
 
-            float offsetTextPx = (artPx - mMaxTempHeight)/2f;
-            float textBaselinePx = (float) centerY+artMarginPx+artPx-offsetTextPx;
-            // equal spacing between art,
-            int weatherInfoSpacing = (int) ((width - artPx - mMinTempWidth - mMaxTempWidth)/4);
-            if (mWeatherId != null){
-                int weatherImage = Utility.getArtResourceForWeatherCondition(mWeatherId);
-                Drawable weatherArt = ResourcesCompat.getDrawable(getResources(), weatherImage, null);
-                weatherArt.setBounds((int) (weatherInfoSpacing),
-                        (int) (centerY + artMarginPx), (int) (weatherInfoSpacing+artPx), (int) (centerY+artPx + artMarginPx));
-                weatherArt.draw(canvas);
-            }
-            if (mMaxTemp != null) {
-                canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, (float) 2*weatherInfoSpacing+artPx, textBaselinePx, mTextMaxTempPaint);
-            }
-            if (mMinTemp != null) {
-                canvas.drawText(Integer.toString(mMinTemp) + DEGREE_SYMBOL, (float) 3*weatherInfoSpacing + artPx + mMaxTempWidth, textBaselinePx, mTextMinTempPaint);
+                float offsetTextPx = (artPx - mMaxTempHeight) / 2f;
+                float textBaselinePx = (float) centerY + artMarginPx + artPx - offsetTextPx;
+                // equal spacing between art,
+                int weatherInfoSpacing = (int) ((width - artPx - mMinTempWidth - mMaxTempWidth) / 4);
+                if (mWeatherId != null) {
+                    int weatherImage = Utility.getArtResourceForWeatherCondition(mWeatherId);
+                    Drawable weatherArt = ResourcesCompat.getDrawable(getResources(), weatherImage, null);
+                    weatherArt.setBounds((int) (weatherInfoSpacing),
+                            (int) (centerY + artMarginPx), (int) (weatherInfoSpacing + artPx), (int) (centerY + artPx + artMarginPx));
+                    weatherArt.draw(canvas);
+                }
+                if (mMaxTemp != null) {
+                    canvas.drawText(Integer.toString(mMaxTemp) + DEGREE_SYMBOL, (float) 2 * weatherInfoSpacing + artPx, textBaselinePx, mTextMaxTempPaint);
+                }
+                if (mMinTemp != null) {
+                    canvas.drawText(Integer.toString(mMinTemp) + DEGREE_SYMBOL, (float) 3 * weatherInfoSpacing + artPx + mMaxTempWidth, textBaselinePx, mTextMinTempPaint);
+                }
             }
         }
 
