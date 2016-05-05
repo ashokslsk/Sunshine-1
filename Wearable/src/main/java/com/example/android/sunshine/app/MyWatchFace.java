@@ -453,6 +453,7 @@ public class MyWatchFace extends CanvasWatchFaceService {
 
         @Override
         public void onDataChanged(DataEventBuffer dataEventBuffer) {
+            Log.d(TAG, "onDataChanged");
             for (DataEvent event : dataEventBuffer) {
 
                 DataItem dataItem = event.getDataItem();
