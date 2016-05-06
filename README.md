@@ -6,15 +6,27 @@ Synchronizes weather information from OpenWeatherMap on Android Phones and Table
 Pre-requisites
 --------------
 Android SDK 21 or Higher
-Build Tools version 21.1.2
-Android Support AppCompat 22.2.0
-Android Support Annotations 22.2.0
-Android Support GridLayout 22.2.0
-Android Support CardView 22.2.0
-Android Support Design 22.2.0
-Android Support RecyclerView 22.2.0
-Google Play Services GCM 7.0.0
+Build Tools version 23.0.2
+Android Suport Wearable 1.3.0
+Play Services Wearable 8.3.0
+
 BumpTech Glide 3.5.2
+
+Android Support AppCompat 23.1.1
+Android Support Annotations 23.1.1
+Android Support GridLayout 23.1.1
+Android Support CardView 23.1.1
+Android Support Design 23.1.1
+Android Support RecyclerView 23.1.1
+Android Support Wearable 1.3.0
+Google Play Services GCM 8.3.0
+Google Play Services Wearable 8.3.0
+
+
+
+
+Muzei Muzei 2.0
+
 
 
 Getting Started
