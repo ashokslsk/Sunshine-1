@@ -1,6 +1,7 @@
 Sunshine (Wearable Watch Face)
 ===================================
 #### Project 6 ("Go Ubiquitous") of the Udacity Android Developer Nanodegree
+---
 
 Synchronizes weather information from OpenWeatherMap on Android Phones, Tablets, and Wearables.
 
