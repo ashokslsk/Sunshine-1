@@ -42,8 +42,8 @@ Pre-requisites
 * Android Support Wearable 1.3.0
 * Google Play Services GCM 8.3.0
 * Google Play Services Wearable 8.3.0
-Muzei Muzei 2.0
-BumpTech Glide 3.5.2
+* Muzei Muzei 2.0
+* BumpTech Glide 3.5.2
 
 License
 -------
